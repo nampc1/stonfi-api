@@ -1,5 +1,4 @@
-import { camelcaseHumps } from "../../utils/camelcaseHumps";
-import { camelcaseKeys } from "../../utils/camelcaseKeys";
+import { toCamelCase } from "../../utils/casing";
 import { denullifyValues } from "../../utils/denullifyValues";
 
 /**
@@ -10,11 +9,5 @@ import { denullifyValues } from "../../utils/denullifyValues";
 export function normalizeResponse<T extends Record<string, unknown>>(
   response: T,
 ) {
-  // @ts-ignore
-  if (typeof globalThis.Bare !== "undefined") {
-    console.log("in bare");
-    return denullifyValues(camelcaseHumps(response));
-  }
-
-  return denullifyValues(camelcaseKeys(response));
+  return denullifyValues(toCamelCase(response));
 }
