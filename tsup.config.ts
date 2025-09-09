@@ -32,4 +32,20 @@ export default defineConfig([
       }),
     ],
   },
+  {
+    ...sharedOptions,
+    format: "esm",
+    platform: "browser",
+    outDir: "dist/bare",
+    splitting: false,
+    noExternal: ["camelcase-keys", "decamelize-keys", "humps", "ofetch"],
+    define: {
+      "process.env.TSUP_BUILD_ENV": JSON.stringify("bare"),
+    },
+    esbuildPlugins: [
+      AnalyzerPlugin({
+        outfile: "./build-report-bare.local.html",
+      }),
+    ],
+  },
 ]);
