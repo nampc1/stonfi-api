@@ -19,29 +19,20 @@ let toSnakeCaseImpl: <T extends Record<string, unknown>>(
 
 // @ts-ignore
 if (process.env.TSUP_BUILD_ENV === "bare") {
-  // For the bare build, use the compatible `humps` library.
-  toCamelCaseImpl = <T extends Record<string, unknown>>(
-    val: T,
-  ): CamelCasedPropertiesDeep<T> => {
-    return humps.camelizeKeys(val) as CamelCasedPropertiesDeep<T>;
-  };
-  toSnakeCaseImpl = <T extends Record<string, unknown>>(
-    val: T,
-  ): SnakeCasedPropertiesDeep<T> => {
-    return humps.decamelizeKeys(val) as SnakeCasedPropertiesDeep<T>;
-  };
+  // biome-ignore lint/suspicious/noExplicitAny: Bridging library types
+  toCamelCaseImpl = humps.camelizeKeys as any;
+  // biome-ignore lint/suspicious/noExplicitAny: Bridging library types
+  toSnakeCaseImpl = humps.decamelizeKeys as any;
 } else {
-  // For Node.js builds, use the libraries with modern regex.
-  toCamelCaseImpl = <T extends Record<string, unknown>>(
-    val: T,
-  ): CamelCasedPropertiesDeep<T> => {
-    return camelcaseKeys(val, { deep: true }) as CamelCasedPropertiesDeep<T>;
-  };
-  toSnakeCaseImpl = <T extends Record<string, unknown>>(
-    val: T,
-  ): SnakeCasedPropertiesDeep<T> => {
-    return decamelizeKeys(val, { deep: true }) as SnakeCasedPropertiesDeep<T>;
-  };
+  const camelFn = (val: Record<string, unknown>) =>
+    camelcaseKeys(val, { deep: true });
+  const snakeFn = (val: Record<string, unknown>) =>
+    decamelizeKeys(val, { deep: true });
+
+  // biome-ignore lint/suspicious/noExplicitAny: Bridging library types.
+  toCamelCaseImpl = camelFn as any;
+  // biome-ignore lint/suspicious/noExplicitAny: Bridging library types.
+  toSnakeCaseImpl = snakeFn as any;
 }
 
 export const toCamelCase = toCamelCaseImpl;
